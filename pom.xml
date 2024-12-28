@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.trasler</groupId>
+    <artifactId>trasler-utils</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <properties>
+        <!-- Miscellaneous -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <!-- Maven -->
+        <custom.version.maven.jar>3.4.0</custom.version.maven.jar>
+        <!-- Library versions -->
+        <custom.version.vertx>4.5.3</custom.version.vertx>
+        <custom.version.netty>4.1.107.Final</custom.version.netty>
+        <custom.version.slf4j>1.7.36</custom.version.slf4j>
+        <custom.version.logback>1.2.6</custom.version.logback>
+        <custom.version.protobuf>4.29.2</custom.version.protobuf>
+        <custom.version.caffeine>2.6.0</custom.version.caffeine>
+        <custom.version.jackson>2.10.0</custom.version.jackson>
+        <custom.version.junit>4.12</custom.version.junit>
+    </properties>
+    <dependencies>
+        <!-- VertX -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web-client</artifactId>
+            <version>${custom.version.vertx}</version>
+            <type>jar</type>
+        </dependency>
+        <!-- Cache -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${custom.version.caffeine}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${custom.version.jackson}</version>
+            <type>jar</type>
+        </dependency>
+        <!-- Addresses issue with MacOSDnsServerAddressStreamProvider -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${custom.version.netty}</version>
+            <type>jar</type>
+        </dependency>
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${custom.version.slf4j}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${custom.version.logback}</version>
+            <type>jar</type>
+        </dependency>
+        <!-- Protocol Buffers -->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${custom.version.protobuf}</version>
+        </dependency>
+        <!-- Testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${custom.version.junit}</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <!-- Build a standalone executable JAR, to run within the IDE -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${custom.version.maven.jar}</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
