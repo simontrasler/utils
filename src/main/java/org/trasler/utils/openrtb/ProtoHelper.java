@@ -23,6 +23,14 @@ public class ProtoHelper {
         this.registry = builder.registry;
     }
 
+    /**
+     * Convert a JSON message to the provided Protocol Buffers schema.
+     *
+     * @param <T> The schema
+     * @param builder Builder for the schema
+     * @param json The JSON message
+     * @return An equivalent Protocol Buffers message in the given schema
+     */
     public <T extends Message> T fromJson(T.Builder builder, JsonObject json) {
         try {
             messageFromJson(builder, json);
@@ -56,7 +64,7 @@ public class ProtoHelper {
                         }
                     }
                 } else {
-                    logger.warn("Extension ignored, no registry");
+                    logger.warn("No registry to parse extensions in message:{}", descriptor.getFullName());
                 }
             } else {
                 // Get the target field type.
@@ -91,6 +99,17 @@ public class ProtoHelper {
         return updated;
     }
 
+    /**
+     * Coerce a JSON field value to the Protocol Buffers expected type. This
+     * is deliberately lenient, to avoid discarding messages for trifling
+     * reasons when the intent is clear, e.g., an integer is expected, yet the
+     * JSON is an integer value written as a string.
+     *
+     * @param builder The Protocol Buffers builder for the current object
+     * @param fd The field descriptor in that object
+     * @param value The JSON value
+     * @return The coerced value
+     */
     private Object valueFromJson(Message.Builder builder, Descriptors.FieldDescriptor fd, Object value) {
         switch (fd.getType()) {
             case Type.INT32 -> { value = integerFromJson(value); }
@@ -244,6 +263,12 @@ public class ProtoHelper {
         throw new IllegalArgumentException("Field:" + fd.getFullName());
     }
 
+    /**
+     * Convert a Protocol Buffers message to JSON.
+     *
+     * @param message The Protocol Buffers message
+     * @return An equivalent JSON object
+     */
     public JsonObject toJson(Message message) {
         JsonObject json = new JsonObject();
 
@@ -319,6 +344,7 @@ public class ProtoHelper {
             case Type.MESSAGE -> { value = messageToJson(fd, value); }
         }
 
+        // For all other types, the automatic conversion is sufficient.
         return value;
     }
 
