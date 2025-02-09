@@ -1,4 +1,4 @@
-package org.trasler.utils.cache;
+package org.trasler.utils.vertx.cache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,4 +1,4 @@
-package org.trasler.utils.cache;
+package org.trasler.utils.vertx.cache;
 
 import java.time.Instant;
 import org.slf4j.Logger;

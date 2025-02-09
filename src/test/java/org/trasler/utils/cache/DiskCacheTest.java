@@ -1,5 +1,7 @@
 package org.trasler.utils.cache;
 
+import org.trasler.utils.vertx.cache.CacheValue;
+import org.trasler.utils.vertx.cache.DiskCache;
 import io.vertx.core.Vertx;
 import org.junit.Test;
 import org.slf4j.Logger;
