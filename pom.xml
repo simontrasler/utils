@@ -69,6 +69,11 @@
             <artifactId>protobuf-java</artifactId>
             <version>${custom.version.protobuf}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
+            <version>${custom.version.protobuf}</version>
+        </dependency>
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
