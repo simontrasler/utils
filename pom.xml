@@ -15,8 +15,8 @@
         <!-- Library versions -->
         <custom.version.vertx>4.5.3</custom.version.vertx>
         <custom.version.netty>4.1.107.Final</custom.version.netty>
-        <custom.version.slf4j>1.7.36</custom.version.slf4j>
-        <custom.version.logback>1.2.6</custom.version.logback>
+        <custom.version.slf4j>2.0.16</custom.version.slf4j>
+        <custom.version.logback>1.5.16</custom.version.logback>
         <custom.version.protobuf>4.29.2</custom.version.protobuf>
         <custom.version.caffeine>2.6.0</custom.version.caffeine>
         <custom.version.jackson>2.10.0</custom.version.jackson>
@@ -28,40 +28,34 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web-client</artifactId>
             <version>${custom.version.vertx}</version>
-            <type>jar</type>
         </dependency>
         <!-- Cache -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>${custom.version.caffeine}</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${custom.version.jackson}</version>
-            <type>jar</type>
         </dependency>
         <!-- Addresses issue with MacOSDnsServerAddressStreamProvider -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>${custom.version.netty}</version>
-            <type>jar</type>
         </dependency>
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${custom.version.slf4j}</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${custom.version.logback}</version>
-            <type>jar</type>
         </dependency>
         <!-- Protocol Buffers -->
         <dependency>
@@ -80,7 +74,6 @@
             <artifactId>junit</artifactId>
             <version>${custom.version.junit}</version>
             <scope>test</scope>
-            <type>jar</type>
         </dependency>
     </dependencies>
     <build>
