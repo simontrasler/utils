@@ -291,7 +291,7 @@ public class ProtoHelper {
                 JsonArray array = new JsonArray();
 
                 for (int i = 0; i < message.getRepeatedFieldCount(fd); i++) {
-                    Object value = valueToJson(fd, message.getField(fd));
+                    Object value = valueToJson(fd, message.getRepeatedField(fd, i));
                     array.add(value);
                 }
 
