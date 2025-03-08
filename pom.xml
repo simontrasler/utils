@@ -17,7 +17,7 @@
         <custom.version.netty>4.1.107.Final</custom.version.netty>
         <custom.version.slf4j>2.0.16</custom.version.slf4j>
         <custom.version.logback>1.5.16</custom.version.logback>
-        <custom.version.protobuf>4.29.2</custom.version.protobuf>
+        <custom.version.protobuf>4.29.3</custom.version.protobuf>
         <custom.version.caffeine>2.6.0</custom.version.caffeine>
         <custom.version.jackson>2.10.0</custom.version.jackson>
         <custom.version.junit>4.12</custom.version.junit>
