@@ -31,10 +31,9 @@ import org.trasler.utils.lang.Randomizer;
  */
 public class EwmaDecider implements Decider {
     private final double alpha;
+    private final double minimumRate;
 
     private double rate;
-
-    private double minimumRate;
 
     private EwmaDecider(Builder builder) {
         this.alpha = Math.pow(2.0, -1.0 / builder.halflife);
