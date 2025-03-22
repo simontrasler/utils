@@ -62,8 +62,28 @@ public class EwmaDecider implements Decider {
     }
 
     public static class Builder {
+        /**
+         * The half-life of any observation, measured in observations. In other
+         * words, this is the number of observations it will take for a given
+         * observation to lose half its impact. If a large number, the effect of
+         * new observations will decay slowly: the Decider will have a long
+         * memory. It must be a positive number.
+         */
         private double halflife;
+
+        /**
+         * The sample rate to start with. For example, if using this class in a
+         * decision to call a dependent system, typically the caller will want
+         * to assume success and iterate from there. In this case, the initial
+         * rate should be 1.0. Defaults to 0.0.
+         */
         private double initialRate;
+
+        /**
+         * The minimum rate for a positive decision. Without this, a system with
+         * a high rate of failure can get stuck in a doom loop, where the chance
+         * of a positive decision becomes tiny. Defaults to 0.0.
+         */
         private double minimumRate;
 
         public Builder withHalflife(double halflife) {
