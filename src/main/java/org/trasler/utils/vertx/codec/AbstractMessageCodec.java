@@ -38,7 +38,7 @@ public abstract class AbstractMessageCodec<T> implements MessageCodec<T, T> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMessageCodec.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    abstract public Class getMessageClass();
+    abstract public Class<T> getMessageClass();
 
     @Override
     public void encodeToWire(Buffer buffer, T message) {
@@ -68,7 +68,7 @@ public abstract class AbstractMessageCodec<T> implements MessageCodec<T, T> {
         T message = null;
 
         try {
-            message = (T)objectMapper.readValue(s, getMessageClass());
+            message = objectMapper.readValue(s, getMessageClass());
         }
         catch (JsonProcessingException e) {
             logger.error("Unable to deserialize message class:{} reason:{}", name(), e.getMessage());
