@@ -13,6 +13,7 @@
         <!-- Maven -->
         <custom.version.maven.jar>3.4.0</custom.version.maven.jar>
         <!-- Library versions -->
+        <custom.version.commons>4.4</custom.version.commons>
         <custom.version.vertx>4.5.3</custom.version.vertx>
         <custom.version.netty>4.1.107.Final</custom.version.netty>
         <custom.version.slf4j>2.0.16</custom.version.slf4j>
@@ -23,6 +24,12 @@
         <custom.version.junit>4.12</custom.version.junit>
     </properties>
     <dependencies>
+        <!-- Utilities -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
+        </dependency>
         <!-- VertX -->
         <dependency>
             <groupId>io.vertx</groupId>
