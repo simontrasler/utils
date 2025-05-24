@@ -38,8 +38,6 @@ import org.slf4j.LoggerFactory;
 public class ProtoHelper {
     private static final Logger logger = LoggerFactory.getLogger(ProtoHelper.class);
 
-    private static final String EXTENSION_NAME = "ext";
-
     private final ExtensionRegistry registry;
 
     private ProtoHelper(Builder builder) {
@@ -72,50 +70,46 @@ public class ProtoHelper {
         Descriptors.Descriptor descriptor = builder.getDescriptorForType();
 
         for (String key : json.fieldNames()) {
-            if (EXTENSION_NAME.equals(key)) {
-                if (registry != null) {
-                    // Handle extensions.
-                    JsonObject ext = json.getJsonObject(key);
+            // Get the target field type.
+            Descriptors.FieldDescriptor fd = descriptor.findFieldByName(key);
 
-                    // Offer all fields to each applicable extension object.
-                    for (Descriptors.FieldDescriptor fd : registry.getAllExtensions(descriptor)) {
-                        Object value = messageFromJson(builder, fd, ext);
-
-                        if (value != null) {
-                            builder.setField(fd, value);
-                            updated = true;
-                        }
-                    }
-                } else {
-                    logger.warn("No registry to parse extensions in message:{}", descriptor.getFullName());
+            if (fd != null) {
+                updated |= fieldFromJson(builder, json, fd, key);
+            } else if (registry != null) {
+                // Offer all fields to each applicable extension object.
+                for (Descriptors.FieldDescriptor extFd : registry.getAllExtensions(descriptor)) {
+                    updated |= fieldFromJson(builder, json, extFd, key);
                 }
             } else {
-                // Get the target field type.
-                Descriptors.FieldDescriptor fd = descriptor.findFieldByName(key);
+                logger.warn("No registry to parse extensions in message:{}", descriptor.getFullName());
+            }
+        }
 
-                if (fd != null) {
-                    // Populate the target object, converting the type as necessary.
-                    if (fd.isRepeated()) {
-                        JsonArray array = json.getJsonArray(key);
+        return updated;
+    }
 
-                        for (Object value : array) {
-                            value = valueFromJson(builder, fd, value);
+    private boolean fieldFromJson(Message.Builder builder, JsonObject json, Descriptors.FieldDescriptor fd, String key) {
+        boolean updated = false;
 
-                            if (value != null) {
-                                builder.addRepeatedField(fd, value);
-                                updated = true;
-                            }
-                        }
-                    } else {
-                        Object value = json.getValue(key);
-                        value = valueFromJson(builder, fd, value);
+        // Populate the target object, converting the type as necessary.
+        if (fd.isRepeated()) {
+            JsonArray array = json.getJsonArray(key);
 
-                        if (value != null) {
-                            builder.setField(fd, value);
-                            updated = true;
-                        }
-                    }
+            for (Object value : array) {
+                value = valueFromJson(builder, fd, value);
+
+                if (value != null) {
+                    builder.addRepeatedField(fd, value);
+                    updated = true;
                 }
+            }
+        } else {
+            Object value = json.getValue(key);
+            value = valueFromJson(builder, fd, value);
+
+            if (value != null) {
+                builder.setField(fd, value);
+                updated = true;
             }
         }
 
@@ -192,31 +186,7 @@ public class ProtoHelper {
     }
 
     private Object booleanFromJson(Object value) {
-        switch (value) {
-            case String s -> {
-                if ("1".equals(s) || "true".equals(s) || "TRUE".equals(s)) {
-                    return Boolean.TRUE;
-                }
-                return Boolean.FALSE;
-            }
-            case Long l -> {
-                return (l != 0);
-            }
-            case Integer i -> {
-                return (i != 0);
-            }
-            case Double d -> {
-                return (d != 0.0);
-            }
-            case Float f -> {
-                return (f != 0.0);
-            }
-            default -> {
-                // No-op.
-            }
-        }
-
-        return value;
+        return parseBoolean(value);
     }
 
     private Object floatFromJson(Object value) {
@@ -305,56 +275,44 @@ public class ProtoHelper {
         Descriptors.Descriptor descriptor = message.getDescriptorForType();
 
         for (Descriptors.FieldDescriptor fd : descriptor.getFields()) {
-            if (fd.isRepeated() ? message.getRepeatedFieldCount(fd) == 0 : !message.hasField(fd)) {
-                // Skip fields not explicitly set.
-                continue;
-            }
-
-            if (fd.isRepeated()) {
-                JsonArray array = new JsonArray();
-
-                for (int i = 0; i < message.getRepeatedFieldCount(fd); i++) {
-                    Object value = valueToJson(fd, message.getRepeatedField(fd, i));
-                    array.add(value);
-                }
-
-                // At this point we are guaranteed at least one value, so always
-                // emit the array.
-                json.put(fd.getName(), array);
-                updated = true;
-            } else {
-                Object value = valueToJson(fd, message.getField(fd));
-
-                if (value != null) {
-                    json.put(fd.getName(), value);
-                    updated = true;
-                }
-            }
+            updated |= fieldToJson(json, message, fd);
         }
 
         if (registry != null) {
             for (Descriptors.FieldDescriptor fd : registry.getAllExtensions(descriptor)) {
-                if (fd.isRepeated() || !message.hasField(fd)) {
-                    // OpenRTB does not support repeated extensions so skip them,
-                    // in addition to fields not explicitly set.
-                    continue;
-                }
+                updated |= fieldToJson(json, message, fd);
+            }
+        }
 
-                Object value = valueToJson(fd, message.getField(fd));
+        return updated;
+    }
 
-                if (value != null && value instanceof JsonObject childJson) {
-                    // Lazily instantiate the extension object.
-                    JsonObject ext = json.getJsonObject(EXTENSION_NAME);
+    private boolean fieldToJson(JsonObject json, Message message, Descriptors.FieldDescriptor fd) {
+        if (fd.isRepeated() ? message.getRepeatedFieldCount(fd) == 0 : !message.hasField(fd)) {
+            // Skip fields not explicitly set.
+            return false;
+        }
 
-                    if (ext == null) {
-                        ext = new JsonObject();
-                        json.put(EXTENSION_NAME, ext);
-                    }
+        boolean updated = false;
 
-                    // Combine the fields for all the extensions.
-                    ext.mergeIn(childJson);
-                    updated = true;
-                }
+        if (fd.isRepeated()) {
+            JsonArray array = new JsonArray();
+
+            for (int i = 0; i < message.getRepeatedFieldCount(fd); i++) {
+                Object value = valueToJson(fd, message.getRepeatedField(fd, i));
+                array.add(value);
+            }
+
+            // At this point we are guaranteed at least one value, so always
+            // emit the array.
+            json.put(fd.getName(), array);
+            updated = true;
+        } else {
+            Object value = valueToJson(fd, message.getField(fd));
+
+            if (value != null) {
+                json.put(fd.getName(), value);
+                updated = true;
             }
         }
 
@@ -384,6 +342,33 @@ public class ProtoHelper {
 
         logger.warn("Could not convert field:{} from:{} to:{}", fd.getName(), value.getClass(), Message.class);
         throw new IllegalArgumentException("Field:" + fd.getFullName());
+    }
+
+    public static boolean parseBoolean(Object value) {
+        switch (value) {
+            case String s -> {
+                if ("1".equals(s) || "true".equals(s) || "TRUE".equals(s)) {
+                    return true;
+                }
+            }
+            case Long l -> {
+                return (l != 0);
+            }
+            case Integer i -> {
+                return (i != 0);
+            }
+            case Double d -> {
+                return (d != 0.0);
+            }
+            case Float f -> {
+                return (f != 0.0);
+            }
+            default -> {
+                // No-op.
+            }
+        }
+
+        return false;
     }
 
     public static class Builder {
