@@ -41,6 +41,11 @@ import org.junit.Test;
 public class TrieConfigTest {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static final MapAccessor<String> A1B1 = new MapAccessor<>(Map.of("a", "a1", "b", "b1"));
+    private static final MapAccessor<String> A1B2 = new MapAccessor<>(Map.of("a", "a1", "b", "b2"));
+    private static final MapAccessor<String> A2B1 = new MapAccessor<>(Map.of("a", "a2", "b", "b1"));
+    private static final MapAccessor<String> A2B2 = new MapAccessor<>(Map.of("a", "a2", "b", "b2"));
+
     @Test
     public void testJsonFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("config.json");
@@ -49,10 +54,10 @@ public class TrieConfigTest {
         try {
             TrieConfig trieConfig = objectMapper.readValue(string, TrieConfig.class);
 
-            assertEquals(1, trieConfig.get(Map.of("a", "a1", "b", "b1")));
-            assertEquals(2, trieConfig.get(Map.of("a", "a1", "b", "b2")));
-            assertEquals(3, trieConfig.get(Map.of("a", "a2", "b", "b1")));
-            assertEquals(4, trieConfig.get(Map.of("a", "a2", "b", "b2")));
+            assertEquals(1, trieConfig.get(A1B1));
+            assertEquals(2, trieConfig.get(A1B2));
+            assertEquals(3, trieConfig.get(A2B1));
+            assertEquals(4, trieConfig.get(A2B2));
         }
         catch (JsonProcessingException e) {
             fail("Unexpected exception thrown");
@@ -66,10 +71,10 @@ public class TrieConfigTest {
         try {
             TrieConfig trieConfig = TrieConfig.from(Paths.get(url.getPath()), Integer.class);
 
-            assertEquals(1, trieConfig.get(Map.of("a", "a1", "b", "b1")));
-            assertEquals(2, trieConfig.get(Map.of("a", "a1", "b", "b2")));
-            assertEquals(3, trieConfig.get(Map.of("a", "a2", "b", "b1")));
-            assertEquals(4, trieConfig.get(Map.of("a", "a2", "b", "b2")));
+            assertEquals(1, trieConfig.get(A1B1));
+            assertEquals(2, trieConfig.get(A1B2));
+            assertEquals(3, trieConfig.get(A2B1));
+            assertEquals(4, trieConfig.get(A2B2));
         }
         catch (IOException e) {
             fail("Unexpected exception thrown");

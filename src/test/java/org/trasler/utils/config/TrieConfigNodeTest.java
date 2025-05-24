@@ -33,24 +33,31 @@ import org.junit.Test;
  * @author Simon Trasler
  */
 public class TrieConfigNodeTest {
+    private static final MapAccessor<String> US_REQUEST = new MapAccessor<>(Map.of("country", "us"));
+    private static final MapAccessor<String> CA_REQUEST = new MapAccessor<>(Map.of("country", "ca"));
+    private static final MapAccessor<String> MX_REQUEST = new MapAccessor<>(Map.of("country", "mx"));
+
     @Test
     public void testWildcard() {
         TrieConfigNode<Integer> trieConfigNode = new TrieConfigNode.Builder<>()
                 .withMap(Map.of(
                         "us", new TrieConfigNode.Builder<>()
-                                .withValue(1),
+                                .withValue(1)
+                                .build(),
                         "ca", new TrieConfigNode.Builder<>()
-                                .withValue(2),
+                                .withValue(2)
+                                .build(),
                         "*", new TrieConfigNode.Builder<>()
-                                .withValue(3)))
+                                .withValue(3)
+                                .build()))
                 .withValue(4)
                 .build();
 
         ListPointer<String> listPointer = new ListPointer(List.of("country"));
 
-        assertEquals(Integer.valueOf(1), trieConfigNode.get(listPointer, Map.of("country", "us")));
-        assertEquals(Integer.valueOf(2), trieConfigNode.get(listPointer, Map.of("country", "ca")));
-        assertEquals(Integer.valueOf(3), trieConfigNode.get(listPointer, Map.of("country", "mx")));
+        assertEquals(Integer.valueOf(1), trieConfigNode.get(listPointer, US_REQUEST));
+        assertEquals(Integer.valueOf(2), trieConfigNode.get(listPointer, CA_REQUEST));
+        assertEquals(Integer.valueOf(3), trieConfigNode.get(listPointer, MX_REQUEST));
     }
 
     @Test
@@ -58,16 +65,18 @@ public class TrieConfigNodeTest {
         TrieConfigNode<Integer> trieConfigNode = new TrieConfigNode.Builder<>()
                 .withMap(Map.of(
                         "us", new TrieConfigNode.Builder<>()
-                                .withValue(1),
+                                .withValue(1)
+                                .build(),
                         "ca", new TrieConfigNode.Builder<>()
-                                .withValue(2)))
+                                .withValue(2)
+                                .build()))
                 .withValue(4)
                 .build();
 
         ListPointer<String> listPointer = new ListPointer(List.of("country"));
 
-        assertEquals(Integer.valueOf(1), trieConfigNode.get(listPointer, Map.of("country", "us")));
-        assertEquals(Integer.valueOf(2), trieConfigNode.get(listPointer, Map.of("country", "ca")));
-        assertEquals(Integer.valueOf(4), trieConfigNode.get(listPointer, Map.of("country", "mx")));
+        assertEquals(Integer.valueOf(1), trieConfigNode.get(listPointer, US_REQUEST));
+        assertEquals(Integer.valueOf(2), trieConfigNode.get(listPointer, CA_REQUEST));
+        assertEquals(Integer.valueOf(4), trieConfigNode.get(listPointer, MX_REQUEST));
     }
 }

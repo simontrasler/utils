@@ -30,7 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Trie-style configuration. This class supports complex configuration scenarios
@@ -60,8 +59,8 @@ public class TrieConfig<T> {
         this.values = builder.values;
     }
 
-    public T get(Map<String, String> targetingMap) {
-        return values.get(new ListPointer<>(keys), targetingMap);
+    public T get(TargetingAccessor<String> accessor) {
+        return values.get(new ListPointer<>(keys), accessor);
     }
 
     public static <T> TrieConfig<T> from(Path path, Class<T> clazz) throws IOException {
@@ -94,14 +93,14 @@ public class TrieConfig<T> {
                 split[0] = split[0].substring(VALUE_PREFIX.length());
 
                 // Get the list of targeting values.
-                String[] values = split[0].split(VALUE_DELIMITER);
+                String[] targeting = split[0].split(VALUE_DELIMITER);
 
                 // Get the result.
                 T value = objectMapper.readValue(split[1], clazz);
 
                 // Iterate over the list of targeting values, creating a nested
                 // map at each step. At the end of the list, record the result.
-                populateValueBuilder(valueBuilder, new ListPointer<>(Arrays.asList(values)), value);
+                populateValueBuilder(valueBuilder, new ListPointer<>(targeting), value);
             }
         }
 

@@ -23,6 +23,8 @@
  */
 package org.trasler.utils.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,15 +46,15 @@ public class TrieConfigNode<T> {
         this.value = builder.value;
     }
 
-    public T get(ListPointer<String> keys, Map<String, String> targetingMap) {
+    public T get(ListPointer<String> keys, TargetingAccessor<String> accessor) {
         if (map != null) {
             // Keep iterating to find the best match.
-            String targetingValue = targetingMap.get(keys.peek());
+            String targetingValue = accessor.get(keys.peek());
 
-            TrieConfigNode<T> trieConfig = map.get(targetingValue);
+            TrieConfigNode<T> node = map.get(targetingValue);
 
-            if (trieConfig != null) {
-                T result = trieConfig.get(keys.next(), targetingMap);
+            if (node != null) {
+                T result = node.get(keys.next(), accessor);
                 keys.back();
 
                 if (result != null) {
@@ -61,10 +63,10 @@ public class TrieConfigNode<T> {
             }
 
             // Backtrack from the precise match to the next-best option.
-            trieConfig = map.get(WILDCARD);
+            node = map.get(WILDCARD);
 
-            if (trieConfig != null) {
-                T result = trieConfig.get(keys.next(), targetingMap);
+            if (node != null) {
+                T result = node.get(keys.next(), accessor);
                 keys.back();
 
                 if (result != null) {
@@ -78,19 +80,17 @@ public class TrieConfigNode<T> {
     }
 
     public static class Builder<T> {
+        @JsonProperty("map")
         private Map<String, TrieConfigNode<T>> map;
-        private Map<String, TrieConfigNode.Builder<T>> builderMap;
+
+        @JsonProperty("value")
         private T value;
 
-        public Map<String, TrieConfigNode.Builder<T>> getOrCreateMap() {
-            if (builderMap == null) {
-                builderMap = new HashMap<>();
-            }
-            return builderMap;
-        }
+        @JsonIgnore
+        private Map<String, TrieConfigNode.Builder<T>> builderMap;
 
-        public Builder withMap(Map<String, TrieConfigNode.Builder<T>> builderMap) {
-            this.builderMap = builderMap;
+        public Builder withMap(Map<String, TrieConfigNode<T>> map) {
+            this.map = map;
             return this;
         }
 
@@ -99,9 +99,19 @@ public class TrieConfigNode<T> {
             return this;
         }
 
+        @JsonIgnore
+        public Map<String, TrieConfigNode.Builder<T>> getOrCreateMap() {
+            if (builderMap == null) {
+                builderMap = new HashMap<>();
+            }
+            return builderMap;
+        }
+
         public TrieConfigNode<T> build() {
             if (builderMap != null) {
-                map = new HashMap<>();
+                if (map == null) {
+                    map = new HashMap<>();
+                }
 
                 builderMap.forEach((k, v) -> {
                     map.put(k, v.build());

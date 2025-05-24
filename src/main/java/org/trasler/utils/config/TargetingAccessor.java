@@ -23,53 +23,11 @@
  */
 package org.trasler.utils.config;
 
-import java.util.List;
-
 /**
  *
  * @author Simon Trasler
  * @param <T>
  */
-public class ListPointer<T> {
-    private final List<T> list;
-    private int index;
-
-    public ListPointer(List<T> list) {
-        this.list = list;
-        this.index = -1;
-    }
-
-    public ListPointer(T[] array) {
-        this.list = List.of(array);
-        this.index = -1;
-    }
-
-    public T peek() {
-        if (list.size() <= index + 1) {
-            throw new ArrayIndexOutOfBoundsException();
-        }
-        return list.get(index + 1);
-    }
-
-    public ListPointer<T> next() {
-        if (list.size() <= index + 1) {
-            throw new ArrayIndexOutOfBoundsException();
-        }
-
-        index++;
-
-        return this;
-    }
-
-    public boolean hasNext() {
-        return (list.size() > index + 1);
-    }
-
-    public void back() {
-        if (index < 0) {
-            throw new ArrayIndexOutOfBoundsException();
-        }
-
-        index--;
-    }
+public interface TargetingAccessor<T> {
+    public T get(String key);
 }

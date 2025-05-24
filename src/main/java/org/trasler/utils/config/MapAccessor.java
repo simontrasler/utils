@@ -23,53 +23,22 @@
  */
 package org.trasler.utils.config;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Simon Trasler
- * @param <T>
+ * @param <V>
  */
-public class ListPointer<T> {
-    private final List<T> list;
-    private int index;
+public class MapAccessor<V> implements TargetingAccessor<V> {
+    private final Map<String, V> map;
 
-    public ListPointer(List<T> list) {
-        this.list = list;
-        this.index = -1;
+    public MapAccessor(Map<String, V> map) {
+        this.map = map;
     }
 
-    public ListPointer(T[] array) {
-        this.list = List.of(array);
-        this.index = -1;
-    }
-
-    public T peek() {
-        if (list.size() <= index + 1) {
-            throw new ArrayIndexOutOfBoundsException();
-        }
-        return list.get(index + 1);
-    }
-
-    public ListPointer<T> next() {
-        if (list.size() <= index + 1) {
-            throw new ArrayIndexOutOfBoundsException();
-        }
-
-        index++;
-
-        return this;
-    }
-
-    public boolean hasNext() {
-        return (list.size() > index + 1);
-    }
-
-    public void back() {
-        if (index < 0) {
-            throw new ArrayIndexOutOfBoundsException();
-        }
-
-        index--;
+    @Override
+    public V get(String key) {
+        return map.get(key);
     }
 }
