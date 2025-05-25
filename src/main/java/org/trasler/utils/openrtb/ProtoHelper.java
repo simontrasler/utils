@@ -78,7 +78,9 @@ public class ProtoHelper {
             } else if (registry != null) {
                 // Offer all fields to each applicable extension object.
                 for (Descriptors.FieldDescriptor extFd : registry.getAllExtensions(descriptor)) {
-                    updated |= fieldFromJson(builder, json, extFd, key);
+                    if (extFd.getName().equals(key)) {
+                        updated |= fieldFromJson(builder, json, extFd, key);
+                    }
                 }
             } else {
                 logger.warn("No registry to parse extensions in message:{}", descriptor.getFullName());
@@ -155,12 +157,17 @@ public class ProtoHelper {
             case Boolean b -> {
                 return b ? 1 : 0;
             }
+            case JsonObject j -> {
+                // Fall through.
+            }
             default -> {
                 // No-op.
+                return value;
             }
         }
 
-        return value;
+        // Conversion not possible.
+        return null;
     }
 
     private Object longFromJson(Object value) {
@@ -177,12 +184,17 @@ public class ProtoHelper {
             case Boolean b -> {
                 return b ? 1L : 0L;
             }
+            case JsonObject j -> {
+                // Fall through.
+            }
             default -> {
                 // No-op.
+                return value;
             }
         }
 
-        return value;
+        // Conversion not possible.
+        return null;
     }
 
     private Object booleanFromJson(Object value) {
@@ -200,12 +212,17 @@ public class ProtoHelper {
                     logger.warn("Could not convert from:{} to:{}", value.getClass(), Float.class);
                 }
             }
+            case JsonObject j -> {
+                // Fall through.
+            }
             default -> {
                 // No-op.
+                return value;
             }
         }
 
-        return value;
+        // Conversion not possible.
+        return null;
     }
 
     private Object doubleFromJson(Object value) {
@@ -219,12 +236,17 @@ public class ProtoHelper {
                     logger.warn("Could not convert from:{} to:{}", value.getClass(), Double.class);
                 }
             }
+            case JsonObject j -> {
+                // Fall through.
+            }
             default -> {
                 // No-op.
+                return value;
             }
         }
 
-        return value;
+        // Conversion not possible.
+        return null;
     }
 
     private Object stringFromJson(Object value) {
@@ -235,10 +257,16 @@ public class ProtoHelper {
             case Boolean b -> {
                 return b ? "1" : "0";
             }
+            case JsonObject j -> {
+                // Fall through.
+            }
             default -> {
                 return value.toString();
             }
         }
+
+        // Conversion not possible.
+        return null;
     }
 
     private Object messageFromJson(Message.Builder builder, Descriptors.FieldDescriptor fd, Object value) {
@@ -248,12 +276,10 @@ public class ProtoHelper {
             if (messageFromJson(childBuilder, jsonObject)) {
                 return childBuilder.build();
             }
-
-            return null;
         }
 
-        logger.warn("Could not convert field:{} from:{} to:{}", fd.getName(), value.getClass(), Message.class);
-        throw new IllegalArgumentException("Field:" + fd.getFullName());
+        // Conversion not possible.
+        return null;
     }
 
     /**
@@ -279,8 +305,8 @@ public class ProtoHelper {
         }
 
         if (registry != null) {
-            for (Descriptors.FieldDescriptor fd : registry.getAllExtensions(descriptor)) {
-                updated |= fieldToJson(json, message, fd);
+            for (Descriptors.FieldDescriptor extFd : registry.getAllExtensions(descriptor)) {
+                updated |= fieldToJson(json, message, extFd);
             }
         }
 
@@ -344,11 +370,11 @@ public class ProtoHelper {
         throw new IllegalArgumentException("Field:" + fd.getFullName());
     }
 
-    public static boolean parseBoolean(Object value) {
+    public static Boolean parseBoolean(Object value) {
         switch (value) {
             case String s -> {
                 if ("1".equals(s) || "true".equals(s) || "TRUE".equals(s)) {
-                    return true;
+                    return Boolean.TRUE;
                 }
             }
             case Long l -> {
@@ -363,12 +389,17 @@ public class ProtoHelper {
             case Float f -> {
                 return (f != 0.0);
             }
+            case JsonObject j -> {
+                // Fall through.
+            }
             default -> {
                 // No-op.
+                return Boolean.FALSE;
             }
         }
 
-        return false;
+        // Conversion not possible.
+        return null;
     }
 
     public static class Builder {
