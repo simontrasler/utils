@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.trasler</groupId>
         <artifactId>trasler-utils</artifactId>
-        <version>${project.version}</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
     <dependencies>
         <!-- Utilities -->
