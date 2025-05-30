@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.trasler</groupId>
+    <artifactId>trasler-utils-vertx</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <parent>
+        <groupId>org.trasler</groupId>
+        <artifactId>trasler-utils</artifactId>
+        <version>${project.version}</version>
+    </parent>
+    <dependencies>
+        <!-- Utilities -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trasler-utils-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${custom.version.jackson}</version>
+        </dependency>
+        <!-- VertX -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web-client</artifactId>
+            <version>${custom.version.vertx}</version>
+        </dependency>
+        <!-- Cache -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${custom.version.caffeine}</version>
+        </dependency>
+        <!-- Addresses issue with MacOSDnsServerAddressStreamProvider -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${custom.version.netty}</version>
+        </dependency>
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${custom.version.slf4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${custom.version.logback}</version>
+        </dependency>
+        <!-- Testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${custom.version.junit}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <!-- Build a standalone executable JAR, to run within the IDE -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${custom.version.maven.jar}</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
