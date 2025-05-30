@@ -1,6 +1,0 @@
-keys	a,b
-
-value/a1/b1	1
-value/a1/*	2
-value/*/b1	3
-value/*	4
