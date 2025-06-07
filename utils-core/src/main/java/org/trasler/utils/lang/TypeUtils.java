@@ -71,7 +71,7 @@ public class TypeUtils {
                 }
                 catch (NumberFormatException e) {
                     // Fall through.
-                    logger.warn("Could not convert from:{} to:{}", value.getClass(), Double.class);
+                    logger.warn("Could not convert from:{} to:{}", value.getClass(), Integer.class);
                 }
             }
             case Boolean b -> {
@@ -106,7 +106,7 @@ public class TypeUtils {
                 }
                 catch (NumberFormatException e) {
                     // Fall through.
-                    logger.warn("Could not convert from:{} to:{}", value.getClass(), Double.class);
+                    logger.warn("Could not convert from:{} to:{}", value.getClass(), Long.class);
                 }
             }
             case Boolean b -> {
