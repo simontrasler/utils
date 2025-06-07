@@ -30,6 +30,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trasler.utils.lang.TypeUtils;
 
 /**
  *
@@ -131,142 +132,16 @@ public class ProtoHelper {
      */
     private Object valueFromJson(Message.Builder builder, Descriptors.FieldDescriptor fd, Object value) {
         switch (fd.getType()) {
-            case Type.INT32 -> { value = integerFromJson(value); }
-            case Type.INT64 -> { value = longFromJson(value); }
-            case Type.FLOAT -> { value = floatFromJson(value); }
-            case Type.DOUBLE -> { value = doubleFromJson(value); }
-            case Type.BOOL -> { value = booleanFromJson(value); }
-            case Type.STRING -> { value = stringFromJson(value); }
+            case Type.INT32 -> { value = TypeUtils.makeInteger(value); }
+            case Type.INT64 -> { value = TypeUtils.makeLong(value); }
+            case Type.FLOAT -> { value = TypeUtils.makeFloat(value); }
+            case Type.DOUBLE -> { value = TypeUtils.makeDouble(value); }
+            case Type.BOOL -> { value = TypeUtils.makeBoolean(value); }
+            case Type.STRING -> { value = TypeUtils.makeString(value); }
             case Type.MESSAGE -> { value = messageFromJson(builder, fd, value); }
         }
 
         return value;
-    }
-
-    private Object integerFromJson(Object value) {
-        switch (value) {
-            case String s -> {
-                try {
-                    return Integer.valueOf(s);
-                }
-                catch (NumberFormatException e) {
-                    // Fall through.
-                    logger.warn("Could not convert from:{} to:{}", value.getClass(), Integer.class);
-                }
-            }
-            case Boolean b -> {
-                return b ? 1 : 0;
-            }
-            case JsonObject j -> {
-                // Fall through.
-            }
-            default -> {
-                // No-op.
-                return value;
-            }
-        }
-
-        // Conversion not possible.
-        return null;
-    }
-
-    private Object longFromJson(Object value) {
-        switch (value) {
-            case String s -> {
-                try {
-                    return Long.valueOf(s);
-                }
-                catch (NumberFormatException e) {
-                    // Fall through.
-                    logger.warn("Could not convert from:{} to:{}", value.getClass(), Long.class);
-                }
-            }
-            case Boolean b -> {
-                return b ? 1L : 0L;
-            }
-            case JsonObject j -> {
-                // Fall through.
-            }
-            default -> {
-                // No-op.
-                return value;
-            }
-        }
-
-        // Conversion not possible.
-        return null;
-    }
-
-    private Object booleanFromJson(Object value) {
-        return parseBoolean(value);
-    }
-
-    private Object floatFromJson(Object value) {
-        switch (value) {
-            case String s -> {
-                try {
-                    return Float.valueOf(s);
-                }
-                catch (NumberFormatException e) {
-                    // Fall through.
-                    logger.warn("Could not convert from:{} to:{}", value.getClass(), Float.class);
-                }
-            }
-            case JsonObject j -> {
-                // Fall through.
-            }
-            default -> {
-                // No-op.
-                return value;
-            }
-        }
-
-        // Conversion not possible.
-        return null;
-    }
-
-    private Object doubleFromJson(Object value) {
-        switch (value) {
-            case String s -> {
-                try {
-                    return Double.valueOf(s);
-                }
-                catch (NumberFormatException e) {
-                    // Fall through.
-                    logger.warn("Could not convert from:{} to:{}", value.getClass(), Double.class);
-                }
-            }
-            case JsonObject j -> {
-                // Fall through.
-            }
-            default -> {
-                // No-op.
-                return value;
-            }
-        }
-
-        // Conversion not possible.
-        return null;
-    }
-
-    private Object stringFromJson(Object value) {
-        switch (value) {
-            case String s -> {
-                return s;
-            }
-            case Boolean b -> {
-                return b ? "1" : "0";
-            }
-            case JsonObject j -> {
-                // Fall through.
-            }
-            default -> {
-                return value.toString();
-            }
-        }
-
-        // Conversion not possible.
-        return null;
     }
 
     private Object messageFromJson(Message.Builder builder, Descriptors.FieldDescriptor fd, Object value) {
@@ -368,38 +243,6 @@ public class ProtoHelper {
 
         logger.warn("Could not convert field:{} from:{} to:{}", fd.getName(), value.getClass(), Message.class);
         throw new IllegalArgumentException("Field:" + fd.getFullName());
-    }
-
-    public static Boolean parseBoolean(Object value) {
-        switch (value) {
-            case String s -> {
-                if ("1".equals(s) || "true".equals(s) || "TRUE".equals(s)) {
-                    return Boolean.TRUE;
-                }
-            }
-            case Long l -> {
-                return (l != 0);
-            }
-            case Integer i -> {
-                return (i != 0);
-            }
-            case Double d -> {
-                return (d != 0.0);
-            }
-            case Float f -> {
-                return (f != 0.0);
-            }
-            case JsonObject j -> {
-                // Fall through.
-            }
-            default -> {
-                // No-op.
-                return Boolean.FALSE;
-            }
-        }
-
-        // Conversion not possible.
-        return null;
     }
 
     public static class Builder {
